@@ -1,5 +1,5 @@
 import type { Intake, ScenarioResult } from "@/engine/types";
-import { openai } from "@/lib/openai";
+import { getOpenAI } from "@/lib/openai";
 
 type Lang = "nl" | "fr" | "en";
 
@@ -187,6 +187,8 @@ export async function explainScenarioAI(
 - Next steps must be written for the employee (e.g., ask HR, review contract, document dates). Never employer actions like drafting termination letters or notifying the employee.
 - questionsToAsk: 3-6 items, relevant to the employee.`;
 
+  const openai = getOpenAI();
+  
   const resp = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0.2,
