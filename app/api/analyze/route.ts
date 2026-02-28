@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const aiExplanation = await explainWithAI(engine);
 
     return NextResponse.json({
-      verdict: engine.verdict,
+      verdict: (engine as any).verdict ?? null,
       engine,
       aiExplanation,
     });
