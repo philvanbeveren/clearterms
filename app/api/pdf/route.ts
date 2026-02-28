@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import React from "react";
 import { Document, Page, Text, View, StyleSheet, pdf, Image } from "@react-pdf/renderer";
 import type { ExplainAIOutput } from "@/engine/explainAI";
-import { openai } from "@/lib/openai";
+import { getOpenAI, OPENAI_MODEL } from "@/lib/openai";
 import path from "path";
 import fs from "fs/promises";
 
@@ -163,6 +163,8 @@ async function generateHrReadyBullets(args: {
   ].join("\n");
 
   try {
+    const openai = getOpenAI();
+    const model = OPENAI_MODEL;
     const resp = await openai.chat.completions.create({
       model,
       temperature: 0.2,
