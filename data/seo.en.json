@@ -1,0 +1,94 @@
+{
+  "termination-notice-period-calculator": {
+    "title": "Termination notice period calculator",
+    "intro": "Estimate your notice period in minutes. ClearTerms provides an informational simulation (not legal advice).",
+    "bullets": [
+      "Fast estimate based on your inputs",
+      "Simple explanation of next steps",
+      "Built for clarity, not legal complexity"
+    ]
+  },
+  "what-to-do-if-fired": {
+    "title": "What to do if you got fired (checklist)",
+    "intro": "A practical checklist to reduce risk and understand your options after termination.",
+    "bullets": [
+      "Immediate steps to take today",
+      "Documents you should collect",
+      "Questions to ask your employer"
+    ]
+  }
+,
+  "termination-notice-period-calculator": {
+    "title": "Termination notice period calculator",
+    "intro": "Estimate your notice period in minutes. ClearTerms provides an informational simulation (not legal advice).",
+    "bullets": [
+      "Fast estimate based on your inputs",
+      "Simple explanation of next steps",
+      "Built for clarity, not legal complexity"
+    ]
+  },
+  "what-to-do-if-fired": {
+    "title": "What to do if you got fired (checklist)",
+    "intro": "A practical checklist to reduce risk and understand your options after termination.",
+    "bullets": [
+      "Immediate steps to take today",
+      "Documents you should collect",
+      "Questions to ask your employer"
+    ]
+  },
+
+  "how-many-weeks-notice-period": {
+    "title": "How many weeks notice period do I get?",
+    "intro": "A quick way to estimate how many weeks of notice you may be entitled to.",
+    "bullets": [
+      "Estimate notice in under 2 minutes",
+      "Based on seniority and situation",
+      "Clear explanation of the outcome"
+    ]
+  },
+  "fired-without-notice-what-now": {
+    "title": "Fired without notice – what now?",
+    "intro": "Understand what firing without notice may mean and what steps to take next.",
+    "bullets": [
+      "Immediate risks explained",
+      "What to verify with your employer",
+      "Next actions you can take"
+    ]
+  },
+  "resignation-notice-period": {
+    "title": "Resignation notice period explained",
+    "intro": "Thinking about resigning? Estimate your likely notice period first.",
+    "bullets": [
+      "Employee-initiated termination",
+      "Avoid costly mistakes",
+      "Know what to expect"
+    ]
+  },
+  "gross-misconduct-dismissal": {
+    "title": "Dismissal for gross misconduct explained",
+    "intro": "Gross misconduct can change everything. Get a quick clarity check.",
+    "bullets": [
+      "What usually changes in these cases",
+      "Why notice periods differ",
+      "What to double-check"
+    ]
+  },
+  "termination-by-employer": {
+    "title": "Termination by employer – what does it mean?",
+    "intro": "Employer-initiated termination explained in plain English.",
+    "bullets": [
+      "Typical scenarios",
+      "Notice period expectations",
+      "What happens next"
+    ]
+  },
+  "employee-termination-rights": {
+    "title": "Employee termination rights explained",
+    "intro": "A high-level overview of employee rights after termination.",
+    "bullets": [
+      "Key things to be aware of",
+      "Common misunderstandings",
+      "How to get clarity fast"
+    ]
+  }
+}
