@@ -1,14 +1,18 @@
 // app/api/pay/route.ts
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-});
+import Stripe from "stripe";
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("Missing STRIPE_SECRET_KEY");
+  return new Stripe(key);
+}
 
 export async function POST(req: Request) {
   try {
+    const stripe = getStripe();
     const body = await req.json().catch(() => ({}));
 
     // IMPORTANT: we need an internal id to link payment -> scenario -> pdfToken later (webhook)
