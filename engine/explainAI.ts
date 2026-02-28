@@ -1,5 +1,5 @@
 import type { Intake, ScenarioResult } from "@/engine/types";
-import { getOpenAI } from "@/lib/openai";
+import { getOpenAI, OPENAI_MODEL } from "@/lib/openai";
 
 type Lang = "nl" | "fr" | "en";
 
