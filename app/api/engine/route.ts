@@ -3,6 +3,17 @@ import { normalizeIntake } from "@/engine/intake";
 import { buildScenario } from "@/engine/scenario";
 import { explainScenarioAI } from "@/engine/explainAI";
 
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    message: "Use POST for this endpoint.",
+    example: {
+      method: "POST",
+      url: "/api/engine",
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
