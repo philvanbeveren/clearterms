@@ -1,0 +1,105 @@
+{
+  "standard_termination": {
+    "scenarioId": "standard_termination",
+    "sessionId": "cs_test_a1XAyj6U83xWD001dNNW7HgijHhtWp7gUEY5Vog7jqkF1FyYBFocMAdvFz",
+    "customerEmail": "philippe.vanbeveren@hotmail.be",
+    "ai": {
+      "title": "Uitleg over standaard beëindiging van het dienstverband",
+      "scenario": {
+        "code": "standard_termination",
+        "label": "Standard Termination"
+      },
+      "timeline": {
+        "noticeRangeText": "10–14 weken",
+        "confidence": "HIGH",
+        "missingInputs": []
+      },
+      "explanation": {
+        "plainSummary": "Bij een standaard beëindiging van het dienstverband heeft u recht op een opzegtermijn van 10 tot 14 weken, afhankelijk van uw anciënniteit en de specifieke voorwaarden in uw contract.",
+        "whyThisScenario": [
+          {
+            "engineFactId": "engine_scenario",
+            "statement": "Het scenario betreft een standaard beëindiging, wat gebruikelijk is in België."
+          },
+          {
+            "engineFactId": "engine_notice",
+            "statement": "De opzegtermijn is vastgesteld op 10 tot 14 weken, wat overeenkomt met de wettelijke vereisten voor uw anciënniteit van 5 jaar."
+          },
+          {
+            "engineFactId": "engine_input_terminationReason",
+            "statement": "De reden voor beëindiging is standaard, wat betekent dat er geen bijzondere omstandigheden zijn die de opzegtermijn zouden beïnvloeden."
+          }
+        ]
+      },
+      "nextSteps": [
+        {
+          "title": "Neem contact op met HR",
+          "details": "Vraag om verduidelijking over uw opzegtermijn en eventuele rechten die u heeft.",
+          "engineFactIds": [
+            "engine_input_employeeType"
+          ]
+        },
+        {
+          "title": "Controleer uw arbeidsovereenkomst",
+          "details": "Bekijk de specifieke voorwaarden met betrekking tot beëindiging en opzegtermijnen.",
+          "engineFactIds": [
+            "engine_input_terminationReason"
+          ]
+        },
+        {
+          "title": "Documenteer belangrijke data",
+          "details": "Houd een overzicht bij van belangrijke data met betrekking tot uw beëindiging en opzegtermijn.",
+          "engineFactIds": [
+            "engine_input_seniorityYears"
+          ]
+        },
+        {
+          "title": "Vraag om een referentie",
+          "details": "Overweeg om uw werkgever te vragen om een referentie voor toekomstige werkgelegenheid.",
+          "engineFactIds": []
+        },
+        {
+          "title": "Zoek naar nieuwe kansen",
+          "details": "Begin met het verkennen van nieuwe werkmogelijkheden terwijl u de opzegtermijn doorloopt.",
+          "engineFactIds": []
+        }
+      ],
+      "questionsToAsk": [
+        "Wat zijn mijn rechten tijdens de opzegtermijn?",
+        "Zijn er mogelijkheden voor een beëindigingsovereenkomst?",
+        "Hoe kan ik mijn werkoverdracht het beste organiseren?",
+        "Wat gebeurt er met mijn vakantiedagen?",
+        "Kan ik ondersteuning krijgen bij het zoeken naar een nieuwe baan?"
+      ],
+      "guardrails": {
+        "notLegalAdvice": true,
+        "whatWeDidNotAssume": []
+      },
+      "riskMeaning": "Gemiddeld risico: er zijn aandachtspunten; vraag schriftelijke bevestiging en wees voorzichtig met documenten."
+    },
+    "engine": {
+      "intake": {
+        "country": "BE",
+        "language": "nl",
+        "employeeType": "employee",
+        "seniorityYears": 5,
+        "initiatedBy": "employer",
+        "terminationReason": "standard",
+        "roleLevel": "standard"
+      },
+      "scenario": {
+        "scenario": "standard_termination",
+        "noticeRange": [
+          10,
+          14
+        ],
+        "riskLevel": "medium",
+        "flags": [
+          "employer_initiated"
+        ]
+      }
+    },
+    "createdAt": "2026-03-01T21:28:14.644Z",
+    "updatedAt": "2026-03-01T21:46:27.461Z"
+  }
+}

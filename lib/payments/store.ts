@@ -11,6 +11,12 @@ export type PaymentRecord = {
   amountTotal: number | null;
   currency: string | null;
   customerEmail: string | null;
+
+  // ✅ snapshot (voor de echte PDF download)
+  snapshotAi: any | null;
+  snapshotEngine: any | null;
+  snapshotLang: string | null;
+
   createdAt: string;
   updatedAt: string;
 };
@@ -38,13 +44,6 @@ async function writeAll(data: Record<string, PaymentRecord>) {
   await fs.writeFile(FILE_PATH, JSON.stringify(data, null, 2), "utf8");
 }
 
-/**
- * Upsert met idempotency:
- * - Als record al bestaat én paid=true:
- *   - pdfToken blijft behouden (NIET overschrijven)
- *   - createdAt blijft behouden
- *   - je mag wel ontbrekende velden aanvullen (email/amount/currency), en updatedAt updaten
- */
 export async function upsertPaymentRecord(
   input: Omit<PaymentRecord, "createdAt" | "updatedAt">
 ) {
@@ -52,44 +51,14 @@ export async function upsertPaymentRecord(
   const now = new Date().toISOString();
 
   const existing = all[input.sessionId];
-
-  if (existing?.paid) {
-    const merged: PaymentRecord = {
-      ...existing,
-      // paid blijft true
-      paid: true,
-
-      // scenario/product mogen we niet laten "flippen" naar leeg/anders door retries
-      scenarioId: existing.scenarioId || input.scenarioId,
-      productKey: existing.productKey || input.productKey,
-
-      // 🔒 cruciaal: token NOOIT overschrijven als paid al true is
-      pdfToken: existing.pdfToken,
-
-      // zachte updates: enkel aanvullen als het vroeger null/empty was
-      amountTotal: existing.amountTotal ?? input.amountTotal,
-      currency: existing.currency ?? input.currency,
-      customerEmail: existing.customerEmail ?? input.customerEmail,
-
-      createdAt: existing.createdAt,
-      updatedAt: now,
-    };
-
-    all[input.sessionId] = merged;
-    await writeAll(all);
-    return merged;
-  }
-
-  // eerste keer (of nog niet paid): normale upsert
-  const record: PaymentRecord = {
+  all[input.sessionId] = {
     ...input,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   };
 
-  all[input.sessionId] = record;
   await writeAll(all);
-  return record;
+  return all[input.sessionId];
 }
 
 export async function getPaymentRecord(sessionId: string) {
@@ -99,6 +68,6 @@ export async function getPaymentRecord(sessionId: string) {
 
 export async function getPaymentByPdfToken(pdfToken: string) {
   const all = await readAll();
-  const values = Object.values(all);
-  return values.find((r) => r.pdfToken === pdfToken) ?? null;
+  const found = Object.values(all).find((p) => p.pdfToken === pdfToken);
+  return found ?? null;
 }

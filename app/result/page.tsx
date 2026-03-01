@@ -184,64 +184,57 @@ useEffect(() => {
 <button
   className="border px-4 py-2 rounded disabled:opacity-60"
   disabled={paying || !email.trim().includes("@") || hasToken}
-  onClick={async () => {
-    const emailClean = email.trim().toLowerCase();
-    if (!emailClean.includes("@")) {
-      alert(
-        lang === "nl"
-          ? "Vul een geldig e-mail adres in."
-          : lang === "fr"
-          ? "Veuillez entrer une adresse e-mail valide."
-          : "Please enter a valid email."
-      );
+onClick={async () => {
+  const emailClean = email.trim().toLowerCase();
+
+  if (!emailClean.includes("@")) {
+    alert(
+      lang === "nl"
+        ? "Vul een geldig e-mail adres in."
+        : lang === "fr"
+        ? "Veuillez entrer une adresse e-mail valide."
+        : "Please enter a valid email."
+    );
+    return;
+  }
+
+  try {
+    setPaying(true);
+    track("pay_click", { amount: 3, lang });
+
+    const res = await fetch("/api/pay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        scenarioId: ai?.scenario?.code,
+        customerEmail: emailClean,
+
+        // ✅ nodig voor snapshot (secure download)
+        ai: ai,
+        engine: data?.engine,
+      }),
+    });
+
+    const payData = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      alert(payData?.error || "Payment failed");
       return;
     }
 
-    try {
-      setPaying(true);
-
-      track("pay_click", { amount: 3, lang });
-
-      try {
-  setPaying(true);
-
-  track("pay_click", { amount: 3, lang });
-
-  const res = await fetch("/api/pay", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      scenarioId: ai?.scenario?.code,
-      customerEmail: emailClean,
-    }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    alert(data?.error || "Payment failed");
-    return;
-  }
-
-  // 🔥 Redirect naar Stripe Checkout
-  if (data?.url) {
-    window.location.href = data.url;
-    return;
-  }
-
-  alert("Unexpected payment response.");
-} catch (e: any) {
-  alert(e?.message || "Payment failed");
-} finally {
-  setPaying(false);
-}
-
-    } catch (e: any) {
-      alert(e?.message || "Payment failed");
-    } finally {
-      setPaying(false);
+    // 🔥 Redirect naar Stripe Checkout
+    if (payData?.url) {
+      window.location.href = payData.url;
+      return;
     }
-  }}
+
+    alert("Unexpected payment response.");
+  } catch (e: any) {
+    alert(e?.message || "Payment failed");
+  } finally {
+    setPaying(false);
+  }
+}}
 >
   {hasToken
     ? lang === "nl"

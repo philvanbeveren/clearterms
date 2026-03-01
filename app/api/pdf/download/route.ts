@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 
 import { getPaymentByPdfToken } from "../../../../lib/payments/store";
-import { generateScenarioPdf } from "../../../../lib/pdf/generateScenarioPdf";
+import { renderSummaryPdfToBuffer } from "../../../../lib/pdf/renderSummaryPdf";
 import { pdfExists, savePdf, readPdf } from "../../../../lib/pdf/storage";
 
 export const runtime = "nodejs";
@@ -25,21 +25,28 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Payment not completed" }, { status: 403 });
   }
 
-  if (!payment.scenarioId) {
-    return NextResponse.json({ error: "Missing scenarioId" }, { status: 500 });
+  // ✅ must exist for “real PDF”
+  if (!payment.snapshotAi || !payment.snapshotEngine) {
+    return NextResponse.json(
+      { error: "Snapshot missing for this payment. (Webhook/snapshot linking issue)" },
+      { status: 500 }
+    );
   }
 
-  // 🔥 CACHE LOGIC
+  // 🔥 cache per token
   let pdfBuffer: Buffer;
 
   if (await pdfExists(token)) {
     pdfBuffer = await readPdf(token);
   } else {
-    pdfBuffer = await generateScenarioPdf(payment.scenarioId);
+    pdfBuffer = await renderSummaryPdfToBuffer({
+      ai: payment.snapshotAi,
+      engine: payment.snapshotEngine,
+      lang: payment.snapshotLang,
+    });
     await savePdf(token, pdfBuffer);
   }
 
-  // ✅ BodyInit-safe for NextResponse typings
   const body = new Uint8Array(pdfBuffer);
 
   return new NextResponse(body, {

@@ -1,22 +1,17 @@
 // lib/pdf/generateScenarioPdf.ts
-import { PDFDocument, StandardFonts } from "pdf-lib";
+import { getScenarioSnapshot } from "@/lib/payments/snapshots";
+import { renderClearTermsPdfBuffer } from "@/lib/pdf/cleartermsPdf";
 
-/**
- * Minimal working PDF generator.
- * Later vervangen we dit door jouw echte ClearTerms PDF content.
- */
 export async function generateScenarioPdf(scenarioId: string) {
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([595.28, 841.89]); // A4
+  const snap = await getScenarioSnapshot(scenarioId);
+  if (!snap) {
+    // If this happens, it means we didn’t store ai/engine before payment.
+    // Return a clear error PDF? For now: throw.
+    throw new Error(`No scenario snapshot found for scenarioId=${scenarioId}`);
+  }
 
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-  const title = "ClearTerms – PDF Export";
-  const body = `ScenarioId: ${scenarioId}\nGenerated: ${new Date().toISOString()}`;
-
-  page.drawText(title, { x: 50, y: 780, size: 22, font });
-  page.drawText(body, { x: 50, y: 740, size: 12, font, lineHeight: 16 });
-
-  const bytes = await pdfDoc.save();
-  return Buffer.from(bytes);
+  return renderClearTermsPdfBuffer({
+    ai: snap.ai,
+    engine: snap.engine,
+  });
 }
