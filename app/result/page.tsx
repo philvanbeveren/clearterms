@@ -202,49 +202,40 @@ useEffect(() => {
 
       track("pay_click", { amount: 3, lang });
 
-      const res = await fetch("/api/pay", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 3 }),
-      });
+      try {
+  setPaying(true);
 
-      const txt = await res.text();
-      const json = txt ? JSON.parse(txt) : null;
+  track("pay_click", { amount: 3, lang });
 
-      if (!res.ok) {
-        alert(json?.error || `Payment failed (${res.status})`);
-        return;
-      }
+  const res = await fetch("/api/pay", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      scenarioId: ai?.scenario?.code,
+      customerEmail: emailClean,
+    }),
+  });
 
-      const token = json?.pdfToken;
-      if (!token) {
-        alert("Payment ok, but missing pdfToken.");
-        return;
-      }
+  const data = await res.json();
 
-      sessionStorage.setItem("pdfToken", token);
-      setHasToken(true);
+  if (!res.ok) {
+    alert(data?.error || "Payment failed");
+    return;
+  }
 
-      await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: emailClean,
-          lang,
-          scenario: ai?.scenario?.code,
-          notice: ai?.timeline?.noticeRangeText,
-        }),
-      }).catch(() => {});
+  // 🔥 Redirect naar Stripe Checkout
+  if (data?.url) {
+    window.location.href = data.url;
+    return;
+  }
 
-      track("lead_captured", { lang, scenario: ai?.scenario?.code });
+  alert("Unexpected payment response.");
+} catch (e: any) {
+  alert(e?.message || "Payment failed");
+} finally {
+  setPaying(false);
+}
 
-      alert(
-        lang === "nl"
-          ? "Betaling gelukt. PDF is ontgrendeld."
-          : lang === "fr"
-          ? "Paiement réussi. PDF déverrouillé."
-          : "Payment successful. PDF unlocked."
-      );
     } catch (e: any) {
       alert(e?.message || "Payment failed");
     } finally {

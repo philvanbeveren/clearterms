@@ -1,0 +1,14 @@
+{
+  "cs_test_a16QWdLSP9stwgRlbLmviJ3897qma7zDphx9VC4W67JZW2SJJ5goHikSUO": {
+    "sessionId": "cs_test_a16QWdLSP9stwgRlbLmviJ3897qma7zDphx9VC4W67JZW2SJJ5goHikSUO",
+    "paid": true,
+    "scenarioId": "standard_termination",
+    "productKey": "clearterms_pdf",
+    "pdfToken": "d306d61ea9dd6f53ee76d4330cbd6d19fe3c4bc492ee9f98737bdea87a051305",
+    "amountTotal": 300,
+    "currency": "eur",
+    "customerEmail": "philippe.vanbeveren@hotmail.be",
+    "createdAt": "2026-03-01T14:58:55.285Z",
+    "updatedAt": "2026-03-01T14:58:55.285Z"
+  }
+}

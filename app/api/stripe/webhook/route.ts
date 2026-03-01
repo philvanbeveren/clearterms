@@ -14,22 +14,27 @@ export const runtime = "nodejs";
  * - Op checkout.session.completed: maakt een pdfToken aan en bewaart die bij sessionId
  *
  * Vereist env vars:
- * - STRIPE_SECRET_KEY=sk_test_...
+ * - STRIPE_SECRET_KEY=sk_test_... of sk_live_...
  * - STRIPE_WEBHOOK_SECRET=whsec_...
  */
 export async function POST(req: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-  // Stripe stuurt deze header altijd mee
   const sig = req.headers.get("stripe-signature");
   if (!sig) {
-    return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing stripe-signature header" },
+      { status: 400 }
+    );
   }
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    return NextResponse.json({ error: "Missing STRIPE_WEBHOOK_SECRET" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Missing STRIPE_WEBHOOK_SECRET" },
+      { status: 500 }
+    );
   }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
   let event: Stripe.Event;
 
@@ -42,34 +47,46 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid webhook signature" }, { status: 400 });
   }
 
+  // Alleen relevant event verwerken
+  if (event.type !== "checkout.session.completed") {
+    return NextResponse.json({ received: true }, { status: 200 });
+  }
+
   try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
+    const session = event.data.object as Stripe.Checkout.Session;
 
-      const scenarioId = String(session.metadata?.scenarioId ?? "").trim();
-      const productKey = String(session.metadata?.productKey ?? "clearterms_pdf");
-
-      // Nieuwe unlock token die we later gebruiken om PDF te downloaden
-      const pdfToken = randomToken(32);
-
-      await upsertPaymentRecord({
+    const scenarioId = String(session.metadata?.scenarioId ?? "").trim();
+    if (!scenarioId) {
+      console.error("WEBHOOK_METADATA_ERROR: Missing scenarioId on session", {
         sessionId: session.id,
-        paid: true,
-        scenarioId,
-        productKey,
-        pdfToken,
-        amountTotal: session.amount_total ?? null,
-        currency: session.currency ?? null,
-        customerEmail: session.customer_details?.email ?? null,
+        metadata: session.metadata,
       });
-
-      console.log("✅ checkout.session.completed stored:", {
-        sessionId: session.id,
-        scenarioId,
-        amount: session.amount_total,
-        currency: session.currency,
-      });
+      return NextResponse.json({ error: "Missing scenarioId in session metadata" }, { status: 400 });
     }
+
+    const productKey = String(session.metadata?.productKey ?? "clearterms_pdf").trim() || "clearterms_pdf";
+
+    // Nieuwe unlock token die we later gebruiken om PDF te downloaden
+    // (We genereren hem hier; store-layer moet idempotent zijn op sessionId.)
+    const pdfToken = randomToken(32);
+
+    await upsertPaymentRecord({
+      sessionId: session.id,
+      paid: true,
+      scenarioId,
+      productKey,
+      pdfToken,
+      amountTotal: session.amount_total ?? null,
+      currency: session.currency ?? null,
+      customerEmail: session.customer_details?.email ?? session.customer_email ?? null,
+    });
+
+    console.log("✅ checkout.session.completed stored:", {
+      sessionId: session.id,
+      scenarioId,
+      amount: session.amount_total,
+      currency: session.currency,
+    });
 
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (err: any) {

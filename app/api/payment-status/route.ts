@@ -1,30 +1,30 @@
 // app/api/payment-status/route.ts
 import { NextResponse } from "next/server";
-import { getPaymentRecord } from "@/lib/payments/store";
+import { getPaymentRecord } from "../../../lib/payments/store";
 
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const sessionId = String(searchParams.get("session_id") ?? "").trim();
+  const url = new URL(req.url);
+  const sessionId = String(url.searchParams.get("session_id") ?? "").trim();
 
   if (!sessionId) {
-    return NextResponse.json({ error: "session_id is required" }, { status: 400 });
+    return NextResponse.json({ error: "Missing session_id" }, { status: 400 });
   }
 
-  const rec = await getPaymentRecord(sessionId);
-  if (!rec) {
-    return NextResponse.json({ ok: true, found: false }, { status: 200 });
+  const payment = await getPaymentRecord(sessionId);
+
+  if (!payment) {
+    return NextResponse.json({ status: "not_found" }, { status: 404 });
   }
 
-  return NextResponse.json(
-    {
-      ok: true,
-      found: true,
-      paid: rec.paid,
-      scenarioId: rec.scenarioId,
-      pdfToken: rec.paid ? rec.pdfToken : null,
-    },
-    { status: 200 }
-  );
+  if (!payment.paid) {
+    return NextResponse.json({ status: "pending" }, { status: 200 });
+  }
+
+  return NextResponse.json({
+    status: "paid",
+    pdfToken: payment.pdfToken,
+    scenarioId: payment.scenarioId,
+  });
 }
